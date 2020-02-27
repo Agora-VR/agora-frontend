@@ -33,12 +33,26 @@
       })
     });
 
-    statusMessage = await response.text();
+    if (!response.ok) {
+      statusMessage = await response.text();
+    }
 
-    if (response.ok) {
-      $user = { userName };
+    const auth_response = await fetch(`${apiHost}/authenticate`, {
+      method: 'POST',
+      cache: 'no-cache',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        'user_name': userName,
+        'user_pass': userPass,
+      })
+    });
+
+    if (auth_response.ok) {
+      $user = await auth_response.text();
 
       $goto('/app');
+    } else {
+      statusMessage = await auth_response.text();
     }
   }
 </script>
