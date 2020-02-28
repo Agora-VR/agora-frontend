@@ -5,7 +5,8 @@
 <script>
   import { goto } from "@sveltech/routify";
 
-  import {apiHost} from './_constants.js';
+  import { postJson } from './_api.js';
+  import { apiHost } from './_constants.js';
   import { user } from './_store.js';
 
   let userName = '';
@@ -22,30 +23,22 @@
   let statusMessage;
 
   async function register() {
-    const response = await fetch(`${apiHost}/register`, {
-      method: 'POST',
-      cache: 'no-cache',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({
+    const response = await postJson('/register',
+      {
         'user_name': userName,
         'user_pass': userPass,
-        'user_type': selectedType
-      })
-    });
+        'user_type': selectedType,
+      });
 
     if (!response.ok) {
       statusMessage = await response.text();
     }
 
-    const auth_response = await fetch(`${apiHost}/authenticate`, {
-      method: 'POST',
-      cache: 'no-cache',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({
+    const auth_response = await postJson('/authenticate',
+      {
         'user_name': userName,
         'user_pass': userPass,
-      })
-    });
+      });
 
     if (auth_response.ok) {
       $user = await auth_response.text();
