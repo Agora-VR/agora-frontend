@@ -1,13 +1,13 @@
 <script>
   import { user } from '../_store.js';
 
-  import Clinician from './_components/Clinician.svelte';
-  import Patient from './_components/Patient.svelte';
+  import Clinician from './_views/Clinician.svelte';
+  import Patient from './_views/Patient.svelte';
 
   const profiles = {
     'patient': Patient,
     'clinician': Clinician,
-    'caretaker': null,
+    'caregiver': null,
   }
 
   let session, sessionClass, sessionType;
@@ -28,4 +28,4 @@
 
 <p>Welcome to your profile!</p>
 
-<svelte:component this={sessionClass} token={$user} />
+<svelte:component this={sessionClass} />

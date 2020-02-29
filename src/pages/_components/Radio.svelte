@@ -3,9 +3,14 @@
   export let options;
 
   export let other = false;
-  let otherValue = '';
+  const otherValue = 'radio-other';
+  let otherText = '';
+
+  let selected = '';
 
   export let value = undefined;
+
+  $: value = (selected === otherValue) ? otherText : selected
 </script>
 
 <p>{prompt}</p>
@@ -13,7 +18,7 @@
 {#each options as option}
 <div>
   <label>
-    <input type="radio" bind:group={value} value={option}>
+    <input type="radio" bind:group={selected} value={option}>
     {option}
   </label>
 </div>
@@ -21,9 +26,9 @@
 {#if other}
 <div>
   <label>
-    <input type="radio" bind:group={value} value={otherValue}>
+    <input type="radio" bind:group={selected} value="radio-other">
     Other:
-    <input type="text" on:input={(event) => value = event.target.value} bind:value={otherValue}>
+    <input type="text" bind:value={otherText}>
   </label>
 </div>
 {/if}

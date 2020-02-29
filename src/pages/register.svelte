@@ -10,12 +10,13 @@
   import { user } from './_store.js';
 
   let userName = '';
+  let userFullName = '';
   let userPass = '';
 
   const user_types = [
     'patient',
     'clinician',
-    'caretaker',
+    'caregiver',
   ];
 
   let selectedType = 'patient';
@@ -25,6 +26,7 @@
   async function register() {
     const response = await postJson('/register',
       {
+        'user_full_name': userFullName,
         'user_name': userName,
         'user_pass': userPass,
         'user_type': selectedType,
@@ -55,6 +57,9 @@
   {#if statusMessage}
     <p>{statusMessage}</p>
   {/if}
+  <label for="user-full-name">Full Name:</label>
+  <input name="user-full-name" type="text" bind:value={userFullName}>
+  <br>
   <label for="user-name">Username:</label>
   <input name="user-name" type="text" bind:value={userName}>
   <br>

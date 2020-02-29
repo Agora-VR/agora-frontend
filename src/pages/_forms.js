@@ -1,11 +1,6 @@
-import Checkbox from './_components/Checkbox.svelte';
-import Radio from './_components/Radio.svelte';
-import Slider from './_components/Slider.svelte';
-import Textarea from './_components/Textarea.svelte';
-
 export const myForm = [
     {
-        type: Checkbox,
+        type: 'checkbox',
         props: {
             prompt: `Lorem ipsum dolor sit amet consectetur adipisicing elit. Facere placeat
 ipsum eos, iusto eius accusantium neque a nihil, expedita itaque suscipit
@@ -18,13 +13,26 @@ veritatis nobis similique odit nisi, delectus tenetur dolorum consectetur!`,
         },
     },
     {
-        type: Textarea,
+        type: 'long-text',
         props: {
             prompt: 'Lorem ipsum dolor sit amet consectetur adipisicing elit?',
         },
     },
     {
-        type: Radio,
+        type: 'radio',
+        props: {
+            prompt: `Facere placeat ipsum eos, iusto eius accusantium neque a nihil, expedita
+itaque suscipit veritatis nobis similique odit nisi, delectus tenetur
+dolorum consectetur!`,
+            options: [
+              'Option 1',
+              'Option 2',
+              'Option 3',
+            ],
+        },
+    },
+    {
+        type: 'radio',
         props: {
             prompt: `Facere placeat ipsum eos, iusto eius accusantium neque a nihil, expedita
 itaque suscipit veritatis nobis similique odit nisi, delectus tenetur
@@ -38,11 +46,17 @@ dolorum consectetur!`,
         },
     },
     {
-        type: Slider,
+        type: 'slider',
         props: {
             prompt: `Lorem ipsum dolor sit amet consectetur adipisicing elit. Facere placeat
 ipsum eos, iusto eius accusantium neque a nihil, expedita itaque suscipit
 veritatis nobis similique odit nisi, delectus tenetur dolorum consectetur!`,
         },
     },
+    {
+        type: 'likert',
+        props: {
+            prompt: 'Lorem ipsum dolor sit amet consectetur adipisicing elit?',
+        }
+    }
 ];
