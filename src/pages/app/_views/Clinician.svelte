@@ -14,7 +14,7 @@
   }
 
   onMount(async () => {
-    patientTable.rows = await getJson('/user/patients');
+    patientTable.rows = await getJson('/clinician/patients');
 
     patientTable = patientTable; // Trigger reaction
   });

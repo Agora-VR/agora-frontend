@@ -2,9 +2,7 @@ export const myForm = [
     {
         type: 'checkbox',
         props: {
-            prompt: `Lorem ipsum dolor sit amet consectetur adipisicing elit. Facere placeat
-ipsum eos, iusto eius accusantium neque a nihil, expedita itaque suscipit
-veritatis nobis similique odit nisi, delectus tenetur dolorum consectetur!`,
+            prompt: 'Lorem ipsum dolor sit amet consectetur adipisicing elit?',
             options: [
               'Option 1',
               'Option 2',
@@ -21,9 +19,7 @@ veritatis nobis similique odit nisi, delectus tenetur dolorum consectetur!`,
     {
         type: 'radio',
         props: {
-            prompt: `Facere placeat ipsum eos, iusto eius accusantium neque a nihil, expedita
-itaque suscipit veritatis nobis similique odit nisi, delectus tenetur
-dolorum consectetur!`,
+            prompt: 'Lorem ipsum dolor sit amet consectetur adipisicing elit?',
             options: [
               'Option 1',
               'Option 2',
@@ -34,9 +30,7 @@ dolorum consectetur!`,
     {
         type: 'radio',
         props: {
-            prompt: `Facere placeat ipsum eos, iusto eius accusantium neque a nihil, expedita
-itaque suscipit veritatis nobis similique odit nisi, delectus tenetur
-dolorum consectetur!`,
+            prompt: 'Lorem ipsum dolor sit amet consectetur adipisicing elit?',
             options: [
               'Option 1',
               'Option 2',
@@ -48,9 +42,7 @@ dolorum consectetur!`,
     {
         type: 'slider',
         props: {
-            prompt: `Lorem ipsum dolor sit amet consectetur adipisicing elit. Facere placeat
-ipsum eos, iusto eius accusantium neque a nihil, expedita itaque suscipit
-veritatis nobis similique odit nisi, delectus tenetur dolorum consectetur!`,
+            prompt: 'Lorem ipsum dolor sit amet consectetur adipisicing elit?',
         },
     },
     {

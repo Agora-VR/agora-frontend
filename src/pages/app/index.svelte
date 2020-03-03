@@ -1,5 +1,9 @@
+<svelte:head>
+  <title>Agora | Profile</title>
+</svelte:head>
+
 <script>
-  import { user } from '../_store.js';
+  import { session } from '../_store.js';
 
   import Clinician from './_views/Clinician.svelte';
   import Patient from './_views/Patient.svelte';
@@ -10,22 +14,16 @@
     'caregiver': null,
   }
 
-  let session, sessionClass, sessionType;
+  let sessionClass, sessionType;
 
-  user.subscribe(async (value) => {
-    const payload = JSON.parse(atob(value.split('.')[1]));
-
-    session = payload['agora'];
-
-    console.log(session);
-
-    sessionType = session['user_type'];
-    sessionClass = profiles[sessionType];
-  });
+  sessionType = $session['user_type'];
+  sessionClass = profiles[sessionType];
 </script>
 
-<h1>Profile for {session['user_name']} ({sessionType})</h1>
+<h1>Profile for {$session['user_name']} ({sessionType})</h1>
 
 <p>Welcome to your profile!</p>
+
+<p>Please <a href="/app/register_form">fill out the registration questionaire</a>!</p>
 
 <svelte:component this={sessionClass} />

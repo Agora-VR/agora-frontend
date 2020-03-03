@@ -1,0 +1,53 @@
+<script>
+  import { params } from '@sveltech/routify';
+
+  import { getJson } from '../../_api.js';
+
+  export let sessionId;
+
+  async function getSession() {
+    return await getJson(`/session/${sessionId}`);
+  }
+
+  async function getResponses() {
+    return await getJson(`/session/${sessionId}/responses`);
+  }
+</script>
+
+<h1>Session</h1>
+
+{#await getSession()}
+  <div>Loading Information...</div>
+{:then sessionInfo}
+  <table>
+    <tr>
+      <th>Patient Name</th>
+      <td>{sessionInfo['user_full_name']} ({sessionInfo['user_name']})</td>
+    </tr>
+    <tr>
+      <th>Date/Time</th>
+      <td>{sessionInfo['session_datetime']}</td>
+    </tr>
+  </table>
+{/await}
+
+<h2>Forms</h2>
+
+<table>
+<tr>
+  <th>Name</th>
+  <th>Date/Time</th>
+</tr>
+{#await getResponses()}
+  <!-- promise is pending -->
+{:then responses}
+  {#each responses as response}
+    <tr>
+      <td>{response['user_full_name']} ({response['user_name']})</td>
+      <td>{response['response_datetime']}</td>
+      <td><a href="/app/form/{response['response_id']}">View</a></td>
+    </tr>
+  {/each}
+{/await}
+</table>
+

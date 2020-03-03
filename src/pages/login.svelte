@@ -7,8 +7,8 @@
   import { user } from './_store.js';
   import { goto, url } from '@sveltech/routify';
 
-  let userName = '';
-  let userPass = '';
+  let userName = 'pat123';
+  let userPass = 'password123';
 
   let errorMessage;
 
@@ -25,7 +25,7 @@
 
     if (response.ok) {
       $user = await response.text();
-      
+
       $goto('/app');
     } else {
       errorMessage = await response.text();

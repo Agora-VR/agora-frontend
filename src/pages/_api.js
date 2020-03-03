@@ -1,6 +1,6 @@
 import { apiHost } from './_constants.js';
 import { user } from './_store.js';
- 
+
 let auth_token;
 
 user.subscribe((value) => auth_token = value);
@@ -10,7 +10,7 @@ export async function getJson(endpoint) {
     method: 'GET',
     cache: 'no-cache',
     headers: {
-        'Authorization': `Bearer ${auth_token}`,
+      'Authorization': `Bearer ${auth_token}`,
     },
   });
 
@@ -25,7 +25,21 @@ export async function postJson(endpoint, body) {
   return await fetch(`${apiHost}${endpoint}`, {
     method: 'POST',
     cache: 'no-cache',
-    headers: {'Content-Type': 'application/json'},
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(body)
+  });
+}
+
+export async function postJsonWithAuth(endpoint, body) {
+  return await fetch(`${apiHost}${endpoint}`, {
+    method: 'POST',
+    cache: 'no-cache',
+    headers: {
+      'Authorization': `Bearer ${auth_token}`,
+      'Content-Type': 'application/json',
+    },
     body: JSON.stringify(body)
   });
 }
