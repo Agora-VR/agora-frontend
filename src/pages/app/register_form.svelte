@@ -5,29 +5,46 @@
 
   import Questionaire from '../_components/Questionaire.svelte';
 
-  let questionaireName = '', questionaireForm = [], questionaireValues;
+  let questionaireValues;
 
-  onMount(async () => {
-    const formStuff = await getJson('/user/register_form');
+  async function getForm() {
+    const response = await getJson('/user/register_form');
 
-    questionaireName = formStuff.form_name;
-    questionaireForm = JSON.parse(formStuff.form_data);
+    response['form_object'] = JSON.parse(response.form_data);
 
-    console.log(`Loaded ${questionaireName}`);
-  });
+    console.log(response);
 
-  async function postResults() {
+    return response;
+  }
+
+  function totalScores(formData, formResults) {
+    const totals = {};
+
+    for (const [name, list] of Object.entries(formData.scores)) {
+      totals[name] = list.map((index) => formResults[index])
+        .reduce((accumulator, currentValue) => accumulator + currentValue);
+    }
+
+    return totals;
+  }
+
+  async function postResults(formSpec) {
     const resultsResponse = await postJsonWithAuth('/user/register_form', {
-      name: questionaireName,
-      results: JSON.stringify(questionaireValues),
+      form_name: formSpec.form_name,
+      form_data: JSON.stringify({
+        results: questionaireValues,
+        scores: totalScores(formSpec.form_object, questionaireValues),
+      }),
     });
   }
 </script>
 
-<h1>Form</h1>
+{#await getForm()}
+  <p>Loading form...</p>
+{:then form}
+  <h1>{form.form_object.title}</h1>
 
-<div>
-  <Questionaire bind:values={questionaireValues} questions={questionaireForm} />
+  <Questionaire bind:results={questionaireValues} questions={form.form_object} />
   <br>
-  <button on:click={postResults}>Submit</button>
-</div>
+  <button on:click={() => postResults(form)}>Submit</button>
+{/await}

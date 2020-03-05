@@ -47,5 +47,5 @@
 {:then form}
   <Questionaire bind:results={questionaireValues} questions={JSON.parse(form.form_data)} />
   <br>
-  <button on:click={() => postFormResponse(form, questionaireValues)}>Submit</button>
+  <button on:click={() => postFormResponse(form)}>Submit</button>
 {/await}

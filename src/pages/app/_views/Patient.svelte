@@ -1,32 +1,16 @@
 <script>
-  import { onMount } from 'svelte';
-
   import { getJson } from '../../_api.js';
   import { session } from '../../_store.js';
 
   import Table from '../_components/Table.svelte';
 
-  let clinicianTable = {
-    headers: [
-      {title: 'Full Name', key: 'user_full_name'},
-      {title: 'Username', key: 'user_name'},
-    ],
-    rows: []
+  async function getCaregivers() {
+    return await getJson('/patient/caregivers');
   }
 
-  let caregiverTable = {
-    headers: [
-      {title: 'Full Name', key: 'user_full_name'},
-      {title: 'Username', key: 'user_name'},
-    ],
-    rows: []
+  async function getClinicians() {
+    return await getJson('/patient/clinicians');
   }
-
-  onMount(async () => {
-    clinicianTable.rows = await getJson('/patient/clinicians');
-
-    clinicianTable = clinicianTable; // Trigger reaction
-  });
 
   async function getSessions() {
     return await getJson(`/user/${$session['user_id']}/sessions`);
@@ -35,11 +19,41 @@
 
 <h2>Clinicians</h2>
 
-<Table spec={clinicianTable} />
+{#await getClinicians()}
+  <p>Loading clinicians...</p>
+{:then clinicians}
+  <table>
+    <tr>
+      <th>Name</th>
+    </tr>
+    {#each clinicians as clinician}
+      <tr>
+        <td>
+          {clinician.user_full_name} ({clinician.user_name})
+        </td>
+      </tr>
+    {/each}
+  </table>
+{/await}
 
 <h2>Caregivers</h2>
 
-<Table spec={caregiverTable} />
+{#await getCaregivers()}
+  <p>Loading caregivers...</p>
+{:then caregivers}
+  <table>
+    <tr>
+      <th>Name</th>
+    </tr>
+    {#each caregivers as caregiver}
+      <tr>
+        <td>
+          {caregiver.user_full_name} ({caregiver.user_name})
+        </td>
+      </tr>
+    {/each}
+  </table>
+{/await}
 
 <h2>Sessions</h2>
 
