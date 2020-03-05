@@ -1,54 +1,76 @@
-export const myForm = [
+export const myForm = {
+  title: 'Sample Form',
+  scores: {
+    'total_test': [0, 1],
+  },
+  questions: [
     {
-        type: 'checkbox',
-        props: {
-            prompt: 'Lorem ipsum dolor sit amet consectetur adipisicing elit?',
-            options: [
-              'Option 1',
-              'Option 2',
-              'Option 3',
-            ],
-        },
+      type: 'likert-radio',
+      prompt: 'Lorem ipsum dolor sit amet consectetur adipisicing elit?',
+      props: {
+        type: 'integer',
+        defaultLabel: 'neutral',
+      }
     },
     {
-        type: 'long-text',
-        props: {
-            prompt: 'Lorem ipsum dolor sit amet consectetur adipisicing elit?',
-        },
+      type: 'likert',
+      prompt: 'Lorem ipsum dolor sit amet consectetur adipisicing elit?',
     },
     {
-        type: 'radio',
-        props: {
-            prompt: 'Lorem ipsum dolor sit amet consectetur adipisicing elit?',
-            options: [
-              'Option 1',
-              'Option 2',
-              'Option 3',
-            ],
-        },
+      type: 'likert',
+      prompt: 'Lorem ipsum dolor sit amet consectetur adipisicing elit?',
+      props: {
+        type: 'string',
+        labels: [
+          'STRONGLY disagree',
+          'disagree',
+          'neutral',
+          'agree',
+          'STRONGLY agree',
+        ],
+      }
     },
     {
-        type: 'radio',
-        props: {
-            prompt: 'Lorem ipsum dolor sit amet consectetur adipisicing elit?',
-            options: [
-              'Option 1',
-              'Option 2',
-              'Option 3',
-            ],
-            other: true,
-        },
+      type: 'checkbox',
+      prompt: 'Lorem ipsum dolor sit amet consectetur adipisicing elit?',
+      props: {
+        options: [
+          'Option 1',
+          'Option 2',
+          'Option 3',
+        ],
+      },
     },
     {
-        type: 'slider',
-        props: {
-            prompt: 'Lorem ipsum dolor sit amet consectetur adipisicing elit?',
-        },
+      type: 'long-text',
+      prompt: 'Lorem ipsum dolor sit amet consectetur adipisicing elit?',
     },
     {
-        type: 'likert',
-        props: {
-            prompt: 'Lorem ipsum dolor sit amet consectetur adipisicing elit?',
-        }
-    }
-];
+      type: 'radio',
+      prompt: 'Lorem ipsum dolor sit amet consectetur adipisicing elit?',
+      props: {
+        options: [
+          'Option 1',
+          'Option 2',
+          'Option 3',
+        ],
+      },
+    },
+    {
+      type: 'radio',
+      prompt: 'Lorem ipsum dolor sit amet consectetur adipisicing elit?',
+      props: {
+        options: [
+          'Option 1',
+          'Option 2',
+          'Option 3',
+        ],
+        other: true,
+      },
+    },
+    {
+      type: 'slider',
+      prompt: 'Lorem ipsum dolor sit amet consectetur adipisicing elit?',
+    },
+  ],
+};

@@ -1,5 +1,4 @@
 <script>
-  export let prompt;
   export let options;
 
   export let other = false;
@@ -12,8 +11,6 @@
 
   $: value = (selected === otherValue) ? otherText : selected
 </script>
-
-<p>{prompt}</p>
 
 {#each options as option}
 <div>

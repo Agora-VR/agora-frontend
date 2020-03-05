@@ -16,7 +16,10 @@
     const formData = JSON.parse(response.form_data),
       responseData = JSON.parse(response.response_data);
 
-    return zip(formData, responseData);
+    console.log(formData);
+    console.log(responseData);
+
+    return zip(formData.questions, responseData.results);
   }
 </script>
 
@@ -32,7 +35,7 @@
   <ol>
     {#each getQuestionAnswers(response) as questionAnswer}
       <li>
-        <p>{questionAnswer[0].props.prompt}</p>
+        <p>{questionAnswer[0].prompt}</p>
         <p>Answer: {questionAnswer[1]}</p>
       </li>
     {/each}

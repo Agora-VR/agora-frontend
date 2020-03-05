@@ -16,10 +16,24 @@
 
   let questionaireValues;
 
-  async function postFormResponse(name, data) {
+  function totalScores(formData, formResults) {
+    const totals = {};
+
+    for (const [name, list] of Object.entries(formData.scores)) {
+      totals[name] = list.map((index) => formResults[index])
+        .reduce((accumulator, currentValue) => accumulator + currentValue);
+    }
+
+    return totals;
+  }
+
+  async function postFormResponse(formSpec) {
     const response = await postJsonWithAuth(`/session/${sessionId}/respond`, {
-      form_name: name,
-      form_data: JSON.stringify(data),
+      form_name: formSpec.form_name,
+      form_data: JSON.stringify({
+        results: questionaireValues,
+        scores: totalScores(JSON.parse(formSpec.form_data), questionaireValues),
+      }),
     });
 
     if (response.ok) {
@@ -33,7 +47,7 @@
   <p>Loading form...</p>
 {:then form}
   <!-- promise was fulfilled -->
-  <Questionaire bind:values={questionaireValues} questions={JSON.parse(form.form_data)} />
+  <Questionaire bind:results={questionaireValues} questions={JSON.parse(form.form_data)} />
   <br>
-  <button on:click={postFormResponse(form.form_name, questionaireValues)}>Submit</button>
+  <button on:click={() => postFormResponse(form, questionaireValues)}>Submit</button>
 {/await}

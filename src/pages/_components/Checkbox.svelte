@@ -1,11 +1,8 @@
 <script>
-  export let prompt;
   export let options;
 
   export let value = [];
 </script>
-
-<p>{prompt}</p>
 
 {#each options as option}
 <div>

@@ -1,7 +1,7 @@
 <script>
-  export let prompt;
+  export let type = 'integer';
 
-  const labels = [
+  export let labels = [
     'strongly disagree',
     'disagree',
     'neutral',
@@ -10,16 +10,23 @@
   ];
 
   let numericValue = 2;
+  let label;
+
+  $: label = labels[numericValue];
 
   export let value;
 
-  $: value = labels[numericValue]
+  $: {
+    if (type === 'integer') {
+      value = numericValue;
+    } else if (type === 'string') {
+      value = label;
+    }
+  }
 </script>
 
-<p>{prompt}</p>
-
 <div>
-  <span>{value}</span>
+  <span>{label}</span>
   <br>
   <input type="range" min="0" max="4" bind:value={numericValue}>
 </div>
