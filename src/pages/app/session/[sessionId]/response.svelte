@@ -43,10 +43,8 @@
 </script>
 
 {#await getForm()}
-  <!-- promise is pending -->
   <p>Loading form...</p>
 {:then form}
-  <!-- promise was fulfilled -->
   <Questionaire bind:results={questionaireValues} questions={JSON.parse(form.form_data)} />
   <br>
   <button on:click={() => postFormResponse(form, questionaireValues)}>Submit</button>

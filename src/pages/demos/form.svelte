@@ -29,7 +29,7 @@
 <h1>{myForm.title}</h1>
 
 <div>
-  <Questionaire bind:results={questionaireValues} questions={myForm.questions} />
+  <Questionaire bind:results={questionaireValues} questions={myForm} />
   <br>
   <button on:click={() => getResults()}>Log Values</button>
 </div>

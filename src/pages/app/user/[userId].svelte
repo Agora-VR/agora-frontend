@@ -27,10 +27,12 @@
 {:then sessions}
   <table>
     <tr>
+      <th>Scenario</th>
       <th>Date/Time</th>
     </tr>
     {#each sessions as session}
       <tr>
+        <td>{session['type_name']}</td>
         <td>
           <a href="/app/session/{session['session_id']}">{session['session_datetime']}</a>
         </td>

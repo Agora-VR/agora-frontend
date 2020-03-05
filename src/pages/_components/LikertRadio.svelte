@@ -24,6 +24,30 @@
   }
 </script>
 
+<style>
+  .likert-radio {
+    display: flex;
+  }
+
+  .likert-radio > div {
+    display: flex;
+
+    flex-direction: column;
+
+    width: 5em;
+
+    text-align: center;
+  }
+
+  .likert-radio > div > label {
+    flex-grow: 1;
+  }
+
+  .likert-radio > div > input {
+    margin: 0.5em 0;
+  }
+</style>
+
 <div class="likert-radio">
   {#each labels as label}
     <div>
