@@ -1,7 +1,5 @@
 <script>
-  import { params } from '@sveltech/routify';
-
-  import { getJson } from '../../_api.js';
+  import { getJson } from '../../../_api.js';
 
   export let sessionId;
 
@@ -33,6 +31,10 @@
 
 <h2>Forms</h2>
 
+<p>
+  Respond to this session <a href="{sessionId}/response">here</a>.
+</p>
+
 <table>
 <tr>
   <th>Name</th>
@@ -50,4 +52,3 @@
   {/each}
 {/await}
 </table>
-

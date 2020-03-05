@@ -5,21 +5,29 @@
 
   import Table from '../_components/Table.svelte';
 
-  let patientTable = {
-    headers: [
-      {title: 'Full Name', key: 'user_full_name'},
-      {title: 'Username', key: 'user_name'},
-    ],
-    rows: []
+  async function getPatients() {
+    return await getJson('/clinician/patients');
   }
-
-  onMount(async () => {
-    patientTable.rows = await getJson('/clinician/patients');
-
-    patientTable = patientTable; // Trigger reaction
-  });
 </script>
 
 <h2>Patients</h2>
 
-<Table spec={patientTable} />
+<!-- <Table spec={patientTable} /> -->
+
+{#await getPatients()}
+  <p>Loading patients...</p>
+{:then patients}
+  <table>
+    <tr>
+      <th>Name</th>
+    </tr>
+    {#each patients as patient}
+      <tr>
+        <td>
+          <a href="/app/user/{patient.user_id}">{patient.user_full_name}</a>
+          ({patient.user_name})
+        </td>
+      </tr>
+    {/each}
+  </table>
+{/await}

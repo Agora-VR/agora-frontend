@@ -7,7 +7,7 @@
   import { user } from './_store.js';
   import { goto, url } from '@sveltech/routify';
 
-  let userName = 'pat123';
+  let userName = 'clin123';
   let userPass = 'password123';
 
   let errorMessage;

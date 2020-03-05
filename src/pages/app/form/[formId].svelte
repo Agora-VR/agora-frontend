@@ -1,6 +1,4 @@
 <script>
-  import { params } from '@sveltech/routify';
-
   import { getJson } from '../../_api.js';
 
   export let formId;
@@ -11,7 +9,7 @@
   };
 
   async function getResponse() {
-    return await getJson(`/form/${formId}`);
+    return await getJson(`/form/response/${formId}`);
   }
 
   function getQuestionAnswers(response) {
