@@ -7,13 +7,14 @@
 
   import { session } from '../_store.js';
 
+  import Caregiver from './_views/Caregiver.svelte';
   import Clinician from './_views/Clinician.svelte';
   import Patient from './_views/Patient.svelte';
 
   const profiles = {
-    'patient': Patient,
+    'caregiver': Caregiver,
     'clinician': Clinician,
-    'caregiver': null,
+    'patient': Patient,
   }
 
   let sessionClass, sessionType;

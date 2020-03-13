@@ -4,16 +4,22 @@
   import { getJson, postJsonWithAuth } from '../../_api.js';
 
   import Message from '../_components/Message.svelte';
-  import Table from '../_components/Table.svelte';
 
   async function getPatients() {
-    return await getJson('/clinician/patients');
+    return await getJson('/caregiver/patients');
   }
 
   let patients = [];
 
   async function getRequests() {
-    return await getJson('/clinician/requests');
+    return await getJson('/caregiver/requests');
+  }
+
+  async function postRequestResponse(id, accept) {
+    return await postJsonWithAuth('/caregiver/request/response', {
+      patient_id: id,
+      accept: accept,
+    });
   }
 
   let requests = [];
@@ -24,10 +30,7 @@
   };
 
   async function sendResponse(id, accept) {
-    const response = await postJsonWithAuth('/clinician/request/response', {
-      patient_id: id,
-      accept: accept,
-    });
+    const response = await postRequestResponse(id, accept);
 
     requestMessage = {
       text: await response.text(),
@@ -62,7 +65,7 @@
   {/each}
 </table>
 
-<h3>Requests</h3>
+<h2>Requests</h2>
 
 <Message bind:message={requestMessage} />
 

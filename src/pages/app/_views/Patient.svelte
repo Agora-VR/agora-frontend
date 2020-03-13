@@ -1,7 +1,8 @@
 <script>
-  import { getJson } from '../../_api.js';
+  import { getJson, postJsonWithAuth } from '../../_api.js';
   import { session } from '../../_store.js';
 
+  import Message from '../_components/Message.svelte';
   import Table from '../_components/Table.svelte';
 
   async function getCaregivers() {
@@ -15,7 +16,62 @@
   async function getSessions() {
     return await getJson(`/user/${$session['user_id']}/sessions`);
   }
+
+  let caregiverRequestName = '';
+
+  let caregiverMessage = {
+    text: '',
+    warning: false,
+  };
+
+  async function postCaregiverRequest() {
+    const response = await postJsonWithAuth('/patient/caregiver', {
+      user_name: caregiverRequestName,
+    });
+
+    caregiverMessage = {
+      text: await response.text(),
+      warning: !response.ok,
+    };
+  }
+
+  let clinicianName = '';
+
+  let clinicianMessage = {
+    text: '',
+    warning: false,
+  };
+
+  async function sendClinicianRequest() {
+    const response = await postJsonWithAuth('/patient/clinician', {
+      user_name: clinicianName,
+    });
+
+    clinicianMessage = {
+      text: await response.text(),
+      warning: !response.ok,
+    };
+  }
 </script>
+
+<h2>Sessions</h2>
+
+{#await getSessions()}
+  <p>Loading sessions...</p>
+{:then sessions}
+  <table>
+    <tr>
+      <th>Date/Time</th>
+    </tr>
+    {#each sessions as session}
+      <tr>
+        <td>
+          <a href="/app/session/{session['session_id']}">{session['session_datetime']}</a>
+        </td>
+      </tr>
+    {/each}
+  </table>
+{/await}
 
 <h2>Clinicians</h2>
 
@@ -36,6 +92,16 @@
   </table>
 {/await}
 
+<h3>Add</h3>
+
+<Message bind:message={clinicianMessage} />
+
+<div>
+  <p>Enter a clinician's username to send them a request</p>
+  <input type="text" bind:value={clinicianName}>
+  <button on:click={sendClinicianRequest}>Send</button>
+</div>
+
 <h2>Caregivers</h2>
 
 {#await getCaregivers()}
@@ -55,21 +121,12 @@
   </table>
 {/await}
 
-<h2>Sessions</h2>
+<h3>Add</h3>
 
-{#await getSessions()}
-  <p>Loading sessions...</p>
-{:then sessions}
-  <table>
-    <tr>
-      <th>Date/Time</th>
-    </tr>
-    {#each sessions as session}
-      <tr>
-        <td>
-          <a href="/app/session/{session['session_id']}">{session['session_datetime']}</a>
-        </td>
-      </tr>
-    {/each}
-  </table>
-{/await}
+<Message bind:message={caregiverMessage} />
+
+<div>
+  <p>Enter a caregiver's username to send them a request</p>
+  <input type="text" bind:value={caregiverRequestName}>
+  <button on:click={postCaregiverRequest}>Send</button>
+</div>
