@@ -1,7 +1,7 @@
 import { apiHost } from './_constants.js';
 import { user } from './_store.js';
 
-let auth_token;
+export let auth_token;
 
 user.subscribe((value) => auth_token = value);
 

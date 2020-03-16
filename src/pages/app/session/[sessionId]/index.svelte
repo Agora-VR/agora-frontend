@@ -10,6 +10,10 @@
   async function getResponses() {
     return await getJson(`/session/${sessionId}/responses`);
   }
+
+  async function getFiles() {
+    return await getJson(`/session/${sessionId}/files`);
+  }
 </script>
 
 <h1>Session</h1>
@@ -26,6 +30,25 @@
       <th>Date/Time</th>
       <td>{sessionInfo['session_datetime']}</td>
     </tr>
+  </table>
+{/await}
+
+<h2>Files</h2>
+
+{#await getFiles()}
+  <!-- promise is pending -->
+{:then files}
+  <!-- promise was fulfilled -->
+  <table>
+    <tr>
+      <th>Type</th>
+    </tr>
+    {#each files as file}
+      <tr>
+        <td>{file.type}</td>
+        <td><a href="/app/session/{sessionId}/{file.type}">View</a></td>
+      </tr>
+    {/each}
   </table>
 {/await}
 
