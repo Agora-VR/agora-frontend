@@ -1,5 +1,6 @@
 <script>
   import { goto, url } from '@sveltech/routify';
+
   import { user, session } from '../_store';
 
   /** We set the static parameret to true since we don't want to change the browser's URL
@@ -22,13 +23,40 @@
   }
 </script>
 
-{#if $user}
-  <a href={$url('/app')}>Home</a>
-  <button on:click={logout} style="position: absolute; right: 24px">
-    Logout
-  </button>
+<style>
+  header {
+    display: flex;
+  }
 
-  <slot>
-    <!-- optional fallback -->
-  </slot>
+  header > div {
+    display: flex;
+
+    flex-grow: 1;
+  }
+
+  header > div:last-of-type {
+    flex-direction: row-reverse;
+  }
+
+  main {
+    max-width: 900px;
+
+    margin: 0 auto;
+  }
+</style>
+
+{#if $user}
+  <header>
+    <div>
+      <a href={$url('/app')}>Home</a>
+    </div>
+    <div>
+      <button on:click={logout}>Logout</button>
+    </div>
+  </header>
+  <main>
+    <slot>
+      <!-- optional fallback -->
+    </slot>
+  </main>
 {/if}

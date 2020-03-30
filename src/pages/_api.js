@@ -5,19 +5,23 @@ export let auth_token;
 
 user.subscribe((value) => auth_token = value);
 
-export async function getJson(endpoint) {
-  const response = await fetch(`${apiHost}${endpoint}`, {
+export async function getData(endpoint) {
+  return await fetch(`${apiHost}${endpoint}`, {
     method: 'GET',
     cache: 'no-cache',
     headers: {
       'Authorization': `Bearer ${auth_token}`,
     },
   });
+}
+
+export async function getJson(endpoint) {
+  const response = await getData(endpoint);
 
   if (response.ok) {
     return await response.json();
   } else {
-    console.log(await response.text());
+    console.log('error', await response.text());
   }
 }
 

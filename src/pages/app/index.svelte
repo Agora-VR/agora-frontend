@@ -4,12 +4,13 @@
 
 <script>
   import { getJson } from '../_api.js';
-
   import { session } from '../_store.js';
 
   import Caregiver from './_views/Caregiver.svelte';
   import Clinician from './_views/Clinician.svelte';
   import Patient from './_views/Patient.svelte';
+
+  import Card from './_components/Card.svelte';
 
   const profiles = {
     'caregiver': Caregiver,
@@ -24,7 +25,7 @@
 
   async function getRegistrationResponseId() {
     const response = await getJson('/user/registration_response');
-    console.log(response);
+
     return response;
   }
 </script>
