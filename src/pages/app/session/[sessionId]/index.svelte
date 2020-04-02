@@ -5,7 +5,13 @@
 <script>
   import { onMount } from 'svelte';
 
+  import Chartist from 'chartist/dist/chartist.js';
+
+  import accessibility from 'chartist-plugin-accessibility/dist/chartist-plugin-accessibility.js';
+  import zoom from 'chartist-plugin-zoom/dist/chartist-plugin-zoom.js';
+
   import { getData, getJson } from '../../../_api.js';
+  import { VerticalArea, VerticalLine } from '../../../_chartist_custom.js';
   import { user } from '../../../_store.js';
 
   import Card from '../../_components/Card.svelte';
@@ -38,20 +44,44 @@
     return await response.text();
   }
 
-  onMount(() => {
-    var data = {
-      // A labels array that can contain any sort of values
-      labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'],
-      // Our series array that contains series objects or in this case series data arrays
+  let zoomCallback;
+
+  function resetZoomCallback() {
+    zoomCallback();
+    zoomCallback = undefined;
+  }
+
+  onMount(async () => {
+    const data = {
+      labels: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16],
       series: [
-        [5, 2, 4, 2, 0]
-      ]
+        // [{x:3, y: 3},{x: 4, y: 3}, {x: 5, y: undefined}, {x: 6, y: 4}, {x: 7, y: null}, {x: 8, y: 4}, {x: 9, y: 4}],
+        [{x:2, y: 1}, {x: 4, y: 1.5}, {x: 4.125, y: 1.9}, {x: 4.25, y: 1.75}, {x: 5, y: 2.25}, {x: 6, y: 4}, {x: 7, y: 3.25}, {x: 8, y: 4}, {x: 9, y: 4}],
+      ],
     };
 
-    // Create a new line chart object where as first parameter we pass in a selector
-    // that is resolving to our chart container element. The Second parameter
-    // is the actual data object.
-    new Chartist.Line('.ct-chart', data);
+    const options = {
+      axisX : {
+        type: Chartist.AutoScaleAxis,
+      },
+      plugins: [
+        Chartist.plugins.ctAccessibility({
+          elementId: 'ct-accessibility-table',
+          // visuallyHiddenStyles: '',
+        }),
+        Chartist.plugins.zoom({
+          onZoom: (chart, reset) => zoomCallback = reset,
+        }),
+      ],
+    };
+
+    const lineChart = new Chartist.Line('.ct-chart', data, options);
+
+    lineChart.on('created', (chart) => {
+      new VerticalLine(chart, 4.5);
+      new VerticalArea(chart, 4, 6);
+    });
+
   });
 </script>
 
@@ -133,7 +163,10 @@
 </Card>
 
 <Card title="Heart-Rate Data">
+  <p><em>Instructions:</em> Click and hold to select an area to zoom. Click "Reset Zoom" to return to previous view.</p>
+  <button on:click={ resetZoomCallback } disabled="{ zoomCallback === undefined }">Reset Zoom</button>
   <div class="ct-chart ct-octave"></div>
+  <div id="ct-accessibility-table"></div>
 </Card>
 
 <Card title="Files">

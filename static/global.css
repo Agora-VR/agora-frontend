@@ -60,3 +60,17 @@ button:not(:disabled):active {
 button:focus {
 	border-color: #666;
 }
+
+.ct-vertical-area {
+	fill: rgba(100, 100, 200, 0.3);
+	stroke: blue;
+}
+
+.ct-vertical-line {
+	stroke: green;
+}
+
+.ct-zoom-rect {
+	fill: rgba(200, 100, 100, 0.3);
+	stroke: red;
+}
