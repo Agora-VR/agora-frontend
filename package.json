@@ -26,8 +26,6 @@
     "svelte": "^3.20.1"
   },
   "dependencies": {
-    "chartist": "^0.11.4",
-    "chartist-plugin-accessibility": "0.0.5",
-    "chartist-plugin-zoom": "^0.6.0"
+    "d3": "^5.15.1"
   }
 }

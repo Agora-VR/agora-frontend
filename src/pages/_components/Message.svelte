@@ -7,6 +7,8 @@
     padding: 0.5em;
 
     background-color: lightgreen;
+
+    border-radius: 4px;
   }
 
   span.warning {
@@ -14,7 +16,7 @@
   }
 </style>
 
-{#if message.text !== ''}
+{#if message && message.text !== ''}
   <p>
     <span class:warning="{message.warning}">{message.text}</span>
   </p>

@@ -4,7 +4,7 @@
   import { getJson, postJsonWithAuth } from '../../_api.js';
 
   import Card from '../_components/Card.svelte';
-  import Message from '../_components/Message.svelte';
+  import Message from '../../_components/Message.svelte';
 
   async function getPatients() {
     return await getJson('/caregiver/patients');

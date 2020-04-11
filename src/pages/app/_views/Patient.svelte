@@ -3,7 +3,7 @@
   import { session } from '../../_store.js';
 
   import Card from '../_components/Card.svelte';
-  import Message from '../_components/Message.svelte';
+  import Message from '../../_components/Message.svelte';
   import Table from '../_components/Table.svelte';
 
   async function getCaregivers() {
