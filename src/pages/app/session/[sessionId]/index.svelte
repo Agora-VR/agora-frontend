@@ -5,6 +5,8 @@
 <script>
   import { onMount } from 'svelte';
 
+  import * as d3 from 'd3';
+
   import { getData, getJson } from '../../../_api.js';
   import { user } from '../../../_store.js';
 
@@ -38,6 +40,286 @@
 
     return await response.text();
   }
+
+    async function getHeartRate() {
+    const response = await getData(`/session/${sessionId}/files/heart_rate_session`);
+
+    return await response.text();
+  }
+
+  async function getSessionVolume() {
+    const response = await getData(`/session/${sessionId}/files/volume_session`);
+
+    return await response.text();
+  }
+
+  async function getChartValues() {
+    return [await getHeartRate(), await getSessionVolume()];
+  }
+
+  onMount(async () => {
+    const dataSets = [{
+      ticker: 'heart_rate',
+      color: 'red',
+      data: d3.csvParse(await getHeartRate(), d3.autoType)
+    }];
+    const weatherSets = [{
+      name: 'test_db',
+      color: 'blue',
+      data: d3.csvParse(await getSessionVolume(), d3.autoType)
+    }];
+
+    const height = 300, width = 500,
+      margin = {top: 20, right: 40, bottom: 30, left: 40};
+
+    // Create functions for converting a data set to data
+    const getX = (d) => d.Timestamp, getY = (d) => d.Value,
+      getWX = (d) => d.Timestamp, getWY = (d) => d.Decibels;
+
+    const stockDateExtents = dataSets.map((set) => d3.extent(set.data, getX)).flat(),
+      weatherDateExtents = weatherSets.map((set) => d3.extent(set.data, getWX)).flat(),
+      combinedExtents = stockDateExtents.concat(weatherDateExtents),
+      xMin = d3.min(combinedExtents), xMax = d3.max(combinedExtents);
+
+    const yMax = Math.ceil(Math.max(
+      ...dataSets.map((data) => d3.max(data.data, getY))));
+
+    const x = d3.scaleUtc()
+        .domain([xMin, xMax])
+        .range([margin.left, width - margin.right]);
+
+    const xAxis = (g, x, height) => g
+        .attr("transform", `translate(0,${height - margin.bottom})`)
+        .call(d3.axisBottom(x).ticks(width / 80).tickSizeOuter(0).tickFormat(d3.timeFormat('%M:%S')));
+
+    const y = d3.scaleLinear()
+        .domain([0, yMax])
+        .range([height - margin.bottom, margin.top]);
+
+    const yAxis = (g, y, title) => g
+        .attr("transform", `translate(${margin.left},0)`)
+        .call(d3.axisLeft(y))
+        .call(g => g.selectAll(".title").data([title]).join("text")
+        .attr("class", "title")
+        .attr("x", -margin.left)
+        .attr("y", 10)
+        .attr("fill", "currentColor")
+        .attr("text-anchor", "start")
+        .text(title));
+
+    const wMax = Math.ceil(Math.max(
+        ...weatherSets.map((set) => d3.max(set.data, getWY))));
+
+    const w = d3.scaleLinear()
+        .domain([0, wMax])
+        .range([height - margin.bottom, margin.top]);
+
+    const wAxis = (g, y, title) => g
+        .attr("transform", `translate(${width - margin.right},0)`)
+        .call(d3.axisRight(y))
+        .call(g => g.selectAll(".title").data([title]).join("text")
+        .attr("class", "title")
+        .attr("x", -margin.right)
+        .attr("y", 10)
+        .attr("fill", "currentColor")
+        .attr("text-anchor", "center")
+        .text(title));
+
+    // Create a function for converting a data set to a line
+    const line = (x, y) => d3.line()
+        .defined(d => !isNaN(getY(d)))
+        .x(d => x(getX(d)))
+        .y(d => y(getY(d)));
+
+    const line2 = (x, y) => d3.line()
+        .defined(d => !isNaN(getWY(d)))
+        .x(d => x(getWX(d)))
+        .y(d => y(getWY(d)));
+
+    // Create the graph part
+    const graphSvg = d3.create("svg")
+        .attr("viewBox", [0, 0, width, height])
+        .style("display", "block");
+
+    // Create a clip path to hide values off the graph
+    graphSvg.append("clipPath")
+        .attr("id", "clip")
+        .append("rect")
+        .attr("x", margin.left)
+        .attr("y", 0)
+        .attr("height", height)
+        .attr("width", width - margin.left - margin.right);
+
+    // Draw dotted grid lines
+    y.ticks().slice(1).forEach((value) => {
+        const height = y(value);
+
+        graphSvg.append('line')
+            .attr('x1', margin.left)
+            .attr('y1', height)
+            .attr('x2', width - margin.right)
+            .attr('y2', height)
+            .attr('stroke-dasharray', 1.5)
+            .style("stroke-width", 1)
+            .style("stroke", "lightgrey")
+            .style("fill", "none");
+    });
+
+    // For each data set, create a path for the line
+    const paths = dataSets.map((set) =>
+        graphSvg.append("path")
+            .datum(set.data)
+            .attr("clip-path", "url(#clip)")
+            .attr("fill", "none")
+            .attr("stroke", set.color)
+            .attr("stroke-width", 1.5)
+            .attr("stroke-linejoin", "round")
+            .attr("stroke-linecap", "round")
+    );
+
+    const weatherPaths = weatherSets.map((set) =>
+        graphSvg.append("path")
+            .datum(set.data)
+            .attr("clip-path", "url(#clip)")
+            .attr("fill", "none")
+            .attr("stroke", set.color)
+            .attr("stroke-width", 1.5)
+            .attr("stroke-linejoin", "round")
+            .attr("stroke-linecap", "round")
+    );
+
+    // Create elements for the left and bottom axises
+    const gx = graphSvg.append("g"),
+        gy = graphSvg.append("g"),
+        gw = graphSvg.append('g');
+
+    const chart = graphSvg.node();
+
+    // The filter part
+    const focusHeight = 100,
+        focusMargin = {top: 20, right: 40, bottom: 30, left: 40};
+
+    const filterSvg = d3.create("svg")
+        .attr("viewBox", [0, 0, width, focusHeight])
+        .style("display", "block");
+
+    // Add x-axis to the filter graph
+    filterSvg.append("g").call(xAxis, x, focusHeight);
+
+    dataSets.forEach((set) => {
+        filterSvg.append("path")
+            .datum(set.data)
+            .attr("fill", "none")
+            .attr("stroke", set.color)
+            .attr("stroke-width", 1.5)
+            .attr("stroke-linejoin", "round")
+            .attr("stroke-linecap", "round")
+            .attr("d", line(x, y.copy().range([focusHeight - focusMargin.bottom, 4])));
+    });
+
+    weatherSets.forEach((set) => {
+        filterSvg.append("path")
+            .datum(set.data)
+            .attr("fill", "none")
+            .attr("stroke", set.color)
+            .attr("stroke-width", 1.5)
+            .attr("stroke-linejoin", "round")
+            .attr("stroke-linecap", "round")
+            .attr("d", line2(x, w.copy().range([focusHeight - focusMargin.bottom, 4])));
+    });
+
+    const legendLeft = focusMargin.left + 4,
+        legendTop = focusHeight - 2;
+
+    dataSets.forEach(({ticker, color}, index) => {
+        filterSvg.append("circle")
+            .attr("cx", legendLeft + 50 * index)
+            .attr("cy", legendTop - 4)
+            .attr("r", 4)
+            .style("fill", color);
+        filterSvg.append("text")
+            .attr("x", legendLeft + 6 + 50 * index)
+            .attr("y", legendTop)
+            .text(ticker)
+            .style("font-size", "10px")
+            .attr("alignment-baseline", "middle");
+    });
+
+    // Create rectangles for each range
+    // const graphRects = rectRanges.map(() =>
+    //     graphSvg.append("rect")
+    //         .attr("clip-path", "url(#clip)")
+    //         .attr("y", margin.top)
+    //         .attr("height", height - margin.bottom - margin.top)
+    //         .style("stroke-width", 1)
+    //         .style("stroke", "red")
+    //         .style("fill", "rgba(200, 100, 100, 0.3)")
+    // );
+
+    function updateRects(focusX, focusY) {
+        // zip(rectRanges, graphRects).forEach(([[start, end], rect]) =>
+        //     rect.attr("x", focusX(start))
+        //         .attr("width", focusX(end) - focusX(start)));
+    }
+
+    // rectRanges.forEach(([start, end]) =>
+    //     filterSvg.append("rect")
+    //         .attr("x", x(start))
+    //         .attr("y", 0)
+    //         .attr("height", focusHeight - margin.bottom)
+    //         .attr("width", x(end) - x(start))
+    //         .style("stroke-width", 1)
+    //         .style("stroke", "red")
+    //         .style("fill", "rgba(200, 100, 100, 0.3)")
+    // );
+
+    function updateGraph(focusX, focusY, focusW) {
+        gx.call(xAxis, focusX, height);
+        gy.call(yAxis, focusY, "Heart Rate (BPM)");
+        gw.call(wAxis, focusW, "Volume (dB)");
+
+        updateRects(focusX, focusY, focusW);
+
+        paths.forEach((path) => path.attr("d", line(focusX, focusY)));
+        weatherPaths.forEach((path) => path.attr('d', line2(focusX, focusW)));
+    }
+
+    function resetGraph() {
+        updateGraph(x.copy(), y.copy(), w.copy());
+    }
+
+    const brush = d3.brushX()
+        .extent([[focusMargin.left, 0.5], [width - focusMargin.right, focusHeight - focusMargin.bottom + 0.5]]);
+
+    const brushElement = filterSvg.append("g")
+        .call(brush)
+        .on('contextmenu', () => d3.event.preventDefault());
+
+    brushElement.select('.selection')
+        .on('contextmenu', () => d3.event.preventDefault())
+        .on('mousedown', () => {
+            if (d3.event.buttons == 2) {
+                brush.clear(brushElement);
+                d3.event.preventDefault();
+                resetGraph();
+            }
+        });
+
+    brush.on("brush", () => {
+        if (!d3.event.selection) return;
+
+        updateGraph(
+            x.copy().domain(d3.event.selection.map(x.invert, x).map(d3.utcSecond.round)),
+            y.copy(), w.copy());
+    })
+
+    resetGraph();
+
+    const chartRoot = document.getElementById('d3-chart');
+
+    chartRoot.appendChild(chart);
+    chartRoot.appendChild(filterSvg.node());
+  });
 </script>
 
 <style>
@@ -118,7 +400,7 @@
 </Card>
 
 <Card title="Heart-Rate Data">
-  <HeartRateGraph />
+  <div id="d3-chart"></div>
 </Card>
 
 <Card title="Files">
