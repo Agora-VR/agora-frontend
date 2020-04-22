@@ -15,6 +15,10 @@
 
   export let sessionId;
 
+  function zip(...rows) {
+    return [...rows[0]].map((_,c) => rows.map(row => row[c]))
+  }
+
   async function getSession() {
     return await getJson(`/session/${sessionId}`);
   }
@@ -53,27 +57,48 @@
     return await response.text();
   }
 
+  async function getDistractionData() {
+    const response = await getData(`/session/${sessionId}/files/distraction_timestamp`);
+
+    return await response.text();
+  }
+
   async function getChartValues() {
     return [await getHeartRate(), await getSessionVolume()];
   }
 
   onMount(async () => {
     const dataSets = [{
-      ticker: 'heart_rate',
+      ticker: 'Heart Rate',
       color: 'red',
       data: d3.csvParse(await getHeartRate(), d3.autoType)
     }];
+
+    const volumeData = d3.csvParse(await getSessionVolume(), d3.autoType);
+
     const weatherSets = [{
-      name: 'test_db',
+      name: 'Microphone Volume',
       color: 'blue',
-      data: d3.csvParse(await getSessionVolume(), d3.autoType)
-    }];
+      data: volumeData.map((data) => ({
+        Timestamp: data.Timestamp,
+        Decibels: data.MicDecibels
+      })),
+    },
+    {
+      name: 'Scene Volume',
+      color: 'lightblue',
+      data: volumeData.map((data) => ({
+        Timestamp: data.Timestamp,
+        Decibels: data.ListenDecibels
+      })),
+    },
+    ];
 
     const height = 300, width = 500,
       margin = {top: 20, right: 40, bottom: 30, left: 40};
 
     // Create functions for converting a data set to data
-    const getX = (d) => d.Timestamp, getY = (d) => d.Value,
+    const getX = (d) => d.Timestamp, getY = (d) => d.Heartrate,
       getWX = (d) => d.Timestamp, getWY = (d) => d.Decibels;
 
     const stockDateExtents = dataSets.map((set) => d3.extent(set.data, getX)).flat(),
@@ -231,47 +256,55 @@
     const legendLeft = focusMargin.left + 4,
         legendTop = focusHeight - 2;
 
-    dataSets.forEach(({ticker, color}, index) => {
+    const legendData = [
+      {color: 'red', name: 'Heart Rate'},
+      {color: 'blue', name: 'Microphone Volume'},
+      {color: 'lightblue', name: 'Scene Volume'}
+    ];
+
+    legendData.forEach(({color, name}, index) => {
         filterSvg.append("circle")
-            .attr("cx", legendLeft + 50 * index)
+            .attr("cx", legendLeft + 120 * index)
             .attr("cy", legendTop - 4)
             .attr("r", 4)
             .style("fill", color);
         filterSvg.append("text")
-            .attr("x", legendLeft + 6 + 50 * index)
+            .attr("x", legendLeft + 6 + 120 * index)
             .attr("y", legendTop)
-            .text(ticker)
+            .text(name)
             .style("font-size", "10px")
             .attr("alignment-baseline", "middle");
     });
 
+    const rectRanges = d3.csvParse(await getDistractionData(), d3.autoType);
+
     // Create rectangles for each range
-    // const graphRects = rectRanges.map(() =>
-    //     graphSvg.append("rect")
-    //         .attr("clip-path", "url(#clip)")
-    //         .attr("y", margin.top)
-    //         .attr("height", height - margin.bottom - margin.top)
-    //         .style("stroke-width", 1)
-    //         .style("stroke", "red")
-    //         .style("fill", "rgba(200, 100, 100, 0.3)")
-    // );
+    const graphRects = rectRanges.map(() =>
+      graphSvg.append("rect")
+        .attr("clip-path", "url(#clip)")
+        .attr("y", margin.top)
+        .attr("height", height - margin.bottom - margin.top)
+        .style("stroke-width", 1)
+        .style("stroke", "red")
+        .style("fill", "rgba(200, 100, 100, 0.3)")
+    );
 
     function updateRects(focusX, focusY) {
-        // zip(rectRanges, graphRects).forEach(([[start, end], rect]) =>
-        //     rect.attr("x", focusX(start))
-        //         .attr("width", focusX(end) - focusX(start)));
+      zip(rectRanges, graphRects).forEach(([range, rect]) =>
+        rect.attr("x", focusX(range.Start))
+          .attr("width", focusX(range.End) - focusX(range.Start)));
     }
 
-    // rectRanges.forEach(([start, end]) =>
-    //     filterSvg.append("rect")
-    //         .attr("x", x(start))
-    //         .attr("y", 0)
-    //         .attr("height", focusHeight - margin.bottom)
-    //         .attr("width", x(end) - x(start))
-    //         .style("stroke-width", 1)
-    //         .style("stroke", "red")
-    //         .style("fill", "rgba(200, 100, 100, 0.3)")
-    // );
+    rectRanges.forEach((range) =>
+      filterSvg.append("rect")
+        .attr("x", x(range.Start))
+        .attr("y", 0)
+        .attr("height", focusHeight - margin.bottom)
+        .attr("width", x(range.End) - x(range.Start))
+        .style("stroke-width", 1)
+        .style("stroke", "red")
+        .style("fill", "rgba(200, 100, 100, 0.3)")
+    );
 
     function updateGraph(focusX, focusY, focusW) {
         gx.call(xAxis, focusX, height);
