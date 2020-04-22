@@ -63,8 +63,10 @@
     return await response.text();
   }
 
-  async function getChartValues() {
-    return [await getHeartRate(), await getSessionVolume()];
+  async function getScript() {
+    const response = await getData(`/session/${sessionId}/files/script`);
+
+    return await response.text();
   }
 
   onMount(async () => {
@@ -391,6 +393,10 @@
       <td>{sessionInfo['user_full_name']} ({sessionInfo['user_name']})</td>
     </tr>
     <tr>
+      <th>Session Type</th>
+      <td>{sessionInfo['display_name']}</td>
+    </tr>
+    <tr>
       <th>Date/Time</th>
       <td>{sessionInfo['session_datetime']}</td>
     </tr>
@@ -411,7 +417,7 @@
     <div>
       <h3>Script</h3>
 
-      {#await getText()}
+      {#await getScript()}
         <p>Loading script...</p>
       {:then scriptText}
         <pre id="script-text">
@@ -423,16 +429,18 @@
     <div>
       <h3>Recorded</h3>
 
-      <pre>
-        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Dolorem, laborum hic quos similique itaque numquam exercitationem! Adipisci nemo cupiditate laudantium totam obcaecati vero ipsa, nobis quibusdam sapiente quisquam temporibus asperiores?
-        Lorem ipsum dolor sit amet consectetur adipisicing elit. Fuga nobis suscipit voluptate odit sequi repellendus debitis, numquam, labore cum dolorem officia, eos earum velit totam tempore aliquid sint explicabo in.
-        Lorem ipsum dolor sit amet consectetur adipisicing elit. Minus perferendis suscipit placeat, impedit dicta nam vel reprehenderit nesciunt, est alias cum molestiae similique quo magni sunt libero nisi hic doloremque.
-      </pre>
+      {#await getText()}
+        <p>Loading recorded text...</p>
+      {:then scriptText}
+        <pre id="script-text">
+          {scriptText}
+        </pre>
+      {/await}
     </div>
   </div>
 </Card>
 
-<Card title="Heart-Rate Data">
+<Card title="Session Data">
   <div id="d3-chart"></div>
 </Card>
 

@@ -61,10 +61,14 @@
   {:then sessions}
     <table>
       <tr>
+        <th>Type</th>
         <th>Date/Time</th>
       </tr>
       {#each sessions as session}
         <tr>
+          <td>
+            {session['display_name']}
+          </td>
           <td>
             <a href="/app/session/{session['session_id']}">{session['session_datetime']}</a>
           </td>
